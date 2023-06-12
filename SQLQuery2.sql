@@ -1,3 +1,5 @@
+--Join Best Ball data with player data to get the Teams--
+--Remove the defensive player Josh Allen--
 WITH deleted_player AS (
   SELECT *
   FROM dbo.player_teams
