@@ -70,27 +70,32 @@ qb<- subset(ball, ball$position_name == 'QB')
 
 ##Group By Entry ID
 qb_min <- qb %>%
-  group_by(draft_entry_id) %>%
+  group_by(tournament_entry_id) %>%
   summarise_at(vars(team_pick_number),
                list(min = min))
 
-ggplot(data=qb_min, aes(x=min, y=min))+
+first_qb <- qb_min%>%
+  group_by(min) %>%
+  summarize(total_count =n(), .groups = 'drop')
+
+ggplot(data=first_qb, aes(x=min, y=total_count))+
   geom_bar(stat='identity')+
   ggtitle("1st QB Drafted per Team")+
   xlab("Round Number")+
-  ylab("# of Teams")
+  ylab("# of Teams")+
+  scale_x_continuous(breaks = seq(min(first_qb$min), max(first_qb$min), by = 1))
 
 
 ###Does diverisying bye weeks matter?###
 
 ##Group by Entry Id, Bye Week #, and Position then Count players
 bye_position <- ball %>%
-  group_by(draft_entry_id, bye_week, position_name) %>%
+  group_by(tournament_entry_id, bye_week, position_name) %>%
   summarize(total_count =n(), .groups = 'drop')
 
 ##Group By Entry ID
 bye_pos_max <- bye_position %>%
-  group_by(draft_entry_id, position_name) %>%
+  group_by(tournament_entry_id, position_name) %>%
   summarise_at(vars(total_count),
                list(bye_week_count = max))
 
@@ -109,7 +114,7 @@ teams<- read.csv('player_team.csv')
 
 ##Group by Entry ID, Position Name, and Team
 rb_team <- teams %>%
-  group_by(draft_entry_id ,position_name, Tm) %>%
+  group_by(tournament_entry_id ,position_name, Tm) %>%
   summarize(total_count =n(), .groups = 'drop')
 
 ##Filter for RBs that were only on 1 team through out the season
